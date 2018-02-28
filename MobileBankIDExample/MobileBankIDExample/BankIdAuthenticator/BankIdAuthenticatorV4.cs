@@ -11,6 +11,10 @@ using MobileBankIDExample.Converters;
 
 namespace MobileBankIDExample.BankIdAuthenticator
 {
+    /// <summary>
+    /// This implementation uses BankIDService which was created using the following WSDL:
+    /// https://appapi2.test.bankid.com/rp/v4?wsdl
+    /// </summary>
     public class BankIdAuthenticatorV4 : IBankIdAuthenticator
     {
         public OrderResponseTypeModel Authenticate(string ssn)
