@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Text.RegularExpressions;
+using MobileBankIDExample.BankIdAuthenticator;
 using MobileBankIDExample.BankIDService;
 
 namespace MobileBankIDExample
@@ -12,6 +13,9 @@ namespace MobileBankIDExample
     /// </summary>
     class Program
     {
+        static readonly IBankIdAuthenticator _bankIdAuthenticator =
+            new BankIdAuthenticatorV4();
+
         static void Main(string[] args)
         {
             System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
@@ -22,77 +26,19 @@ namespace MobileBankIDExample
                 Console.WriteLine("Enter your ssn, 10 or 12 digits (YY)YYMMDDNNNN");
 
                 // format ssn
-                string ssn = "197807064337"; //GetSsn();
+                string ssn = "194211113636"; //GetSsn();
 
                 // authenticate request and return order
-                var order = Authenticate(ssn);
+                var order = _bankIdAuthenticator.Authenticate(ssn);
 
                 // collect the result
-                Collect(order);
+                _bankIdAuthenticator.Collect(order);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 Console.Read();
             }
-        }
-
-        private static OrderResponseType Authenticate(string ssn)
-        {
-            using (var client = new RpServicePortTypeClient())
-            {
-                // RequirementType is optional
-                // This will ensure only mobile BankID can be used
-                // https://www.bankid.com/bankid-i-dina-tjanster/rp-info/guidelines
-                RequirementType conditions = new RequirementType
-                {
-                    condition = new[]
-                    {
-                        new ConditionType()
-                        {
-                            key = "certificatePolicies",
-                            value = new[] {"1.2.3.4.25"} // Mobile BankID
-                        }}
-                };
-
-                // Set the parameters for the authentication
-                AuthenticateRequestType authenticateRequestType = new AuthenticateRequestType()
-                {
-                    personalNumber = ssn,
-                    requirementAlternatives = new[] { conditions }
-                };
-
-                // ...authenticate
-                return client.Authenticate(authenticateRequestType);
-            }
-        }
-
-        private static void Collect(OrderResponseType order)
-        {
-            using (var client = new RpServicePortTypeClient())
-            {
-                Console.WriteLine("{0}Start the BankID application and sign in", Environment.NewLine);
-
-                CollectResponseType result = null;
-
-                // Wait for the client to sign in 
-                do
-                {
-                    // ...collect the response
-                    result = client.Collect(order.orderRef);
-
-                    Console.WriteLine(result.progressStatus);
-                    System.Threading.Thread.Sleep(1000);
-
-                } while (result.progressStatus != ProgressStatusType.COMPLETE);
-
-
-                do
-                {
-                    Console.WriteLine("Hi {0}, please press [ESC] to exit", result.userInfo.givenName);
-                } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
-            }
-
         }
 
         /// <summary>
