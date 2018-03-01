@@ -82,11 +82,10 @@ namespace MobileBankIDExample.BankIdAuthenticator
             while (Console.ReadKey(true).Key != ConsoleKey.Escape);
         }
 
-        private async Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest requestModel,
-            string certifacateName = null)
+        private async Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest requestModel)
         {
             WebRequestHandler handler = new WebRequestHandler();
-            X509Certificate2 certificate = GetX509Certifacate(certifacateName ?? "FP Testcert 2");
+            X509Certificate2 certificate = GetX509Certifacate("FP Testcert 2");
             handler.ClientCertificates.Add(certificate);
 
             using (var httpClient = new HttpClient(handler))
