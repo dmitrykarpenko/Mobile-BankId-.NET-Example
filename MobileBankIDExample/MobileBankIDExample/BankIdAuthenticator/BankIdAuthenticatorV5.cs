@@ -18,6 +18,9 @@ namespace MobileBankIDExample.BankIdAuthenticator
 {
     public class BankIdAuthenticatorV5 : IBankIdAuthenticator
     {
+        private const string _baseUrl = "https://appapi2.test.bankid.com/rp/v5/";
+        private const string _serverCertificateName = "FP Testcert 2";
+
         public OrderResponseTypeModel Authenticate(string ssn)
         {
             return AuthenticateAsync(ssn).Result;
@@ -32,7 +35,7 @@ namespace MobileBankIDExample.BankIdAuthenticator
             };
 
             var responseModel = await PostAsync<AuthRequestModel, AuthResponseModel>(
-                "https://appapi2.test.bankid.com/rp/v5/auth", requestModel);
+                _baseUrl + "auth", requestModel);
 
             return Converter.Map(responseModel);
         }
@@ -68,7 +71,7 @@ namespace MobileBankIDExample.BankIdAuthenticator
             do
             {
                 responseModel = await PostAsync<CollectRequestModel, CollectResponseModel>(
-                    "https://appapi2.test.bankid.com/rp/v5/collect", requestModel);
+                    _baseUrl + "collect", requestModel);
 
                 Console.WriteLine(responseModel.Status);
                 System.Threading.Thread.Sleep(1000);
@@ -85,7 +88,7 @@ namespace MobileBankIDExample.BankIdAuthenticator
         private async Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest requestModel)
         {
             WebRequestHandler handler = new WebRequestHandler();
-            X509Certificate2 certificate = GetX509Certifacate("FP Testcert 2");
+            X509Certificate2 certificate = GetX509Certifacate(_serverCertificateName);
             handler.ClientCertificates.Add(certificate);
 
             using (var httpClient = new HttpClient(handler))
