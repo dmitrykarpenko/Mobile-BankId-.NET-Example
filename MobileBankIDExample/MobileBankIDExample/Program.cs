@@ -14,7 +14,7 @@ namespace MobileBankIDExample
     class Program
     {
         static readonly IBankIdAuthenticator _bankIdAuthenticator =
-            new BankIdAuthenticatorV4();
+            new BankIdAuthenticatorV5();
 
         static void Main(string[] args)
         {

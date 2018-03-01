@@ -1,5 +1,6 @@
 ﻿using MobileBankIDExample.BankIDService;
 using MobileBankIDExample.Models;
+using MobileBankIDExample.Models.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,15 @@ namespace MobileBankIDExample.Converters
             {
                 AutoStartToken = dto.autoStartToken,
                 OrderRef = dto.orderRef,
+            };
+        }
+
+        public static OrderResponseTypeModel Map(AuthResponseModel dto)
+        {
+            return new OrderResponseTypeModel
+            {
+                AutoStartToken = dto.AutoStartToken,
+                OrderRef = dto.OrderRef,
             };
         }
     }
