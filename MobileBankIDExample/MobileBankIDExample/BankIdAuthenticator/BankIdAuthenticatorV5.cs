@@ -31,6 +31,7 @@ namespace MobileBankIDExample.BankIdAuthenticator
             var requestModel = new AuthRequestModel()
             {
                 PersonalNumber = personalNumber,
+                // TODO: make a parameter
                 EndUserIp = "192.168.1.106",
             };
 
