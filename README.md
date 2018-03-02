@@ -3,7 +3,7 @@
 Working Swedish Mobile BankID implementation written in C# .NET
 
 Documentation on version 4 (WSDL) is available at http://www.herlitz.nu/2017/09/13/integrating-with-swedish-bankid-and-.net/
-
+and https://www.bankid.com/assets/bankid/rp/bankid-relying-party-guidelines-v2.16.pdf .
 Documentation on version 5 (REST) is available at https://www.bankid.com/bankid-i-dina-tjanster/rp-info ,
 namely https://www.bankid.com/assets/bankid/rp/bankid-relying-party-guidelines-v3.0.pdf .
 
