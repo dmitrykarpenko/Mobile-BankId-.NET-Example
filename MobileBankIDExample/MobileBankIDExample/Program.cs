@@ -40,8 +40,9 @@ namespace MobileBankIDExample
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.Read();
             }
+
+            Console.Read();
         }
 
         /// <summary>

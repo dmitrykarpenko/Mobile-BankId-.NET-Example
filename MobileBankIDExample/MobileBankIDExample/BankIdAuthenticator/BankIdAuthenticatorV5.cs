@@ -38,6 +38,12 @@ namespace MobileBankIDExample.BankIdAuthenticator
             {
                 PersonalNumber = personalNumber,
                 EndUserIp = endUserIp,
+                Requirement = new RequirementModel
+                {
+                    CardReader = CardReader.Class1,
+                    CertificatePolicies = "1.2.3.4.25", // Test Mobile BankID
+                    // ...
+                }
             };
 
             var responseModel = await PostAsync<AuthRequestModel, AuthResponseModel>(
@@ -78,11 +84,7 @@ namespace MobileBankIDExample.BankIdAuthenticator
             }
             while (responseModel.CollectStatus != CollectStatus.Complete);
 
-            do
-            {
-                Console.WriteLine("Hi {0}, please press [ESC] to exit", responseModel.CompletionData.User.Name);
-            }
-            while (Console.ReadKey(true).Key != ConsoleKey.Escape);
+            Console.WriteLine("Hi {0}, please press any key to exit", responseModel.CompletionData.User.Name);
         }
 
         private async Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest requestModel)

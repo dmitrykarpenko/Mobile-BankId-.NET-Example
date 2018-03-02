@@ -33,7 +33,7 @@ namespace MobileBankIDExample.BankIdAuthenticator
                         new ConditionType()
                         {
                             key = "certificatePolicies",
-                            value = new[] {"1.2.3.4.25"} // Mobile BankID
+                            value = new[] {"1.2.3.4.25"} // Test Mobile BankID
                         }}
                 };
 
@@ -71,12 +71,7 @@ namespace MobileBankIDExample.BankIdAuthenticator
                 }
                 while (result.progressStatus != ProgressStatusType.COMPLETE);
 
-
-                do
-                {
-                    Console.WriteLine("Hi {0}, please press [ESC] to exit", result.userInfo.givenName);
-                }
-                while (Console.ReadKey(true).Key != ConsoleKey.Escape);
+                Console.WriteLine("Hi {0}, please press any key to exit", result.userInfo.givenName);
             }
         }
     }
