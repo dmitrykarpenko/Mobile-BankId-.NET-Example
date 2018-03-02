@@ -8,16 +8,19 @@ namespace MobileBankIDExample
 {
     /// <summary>
     /// Implementation towards the BankID test server
-    /// https://github.com/EricHerlitz/Mobile-BankId-.NET-Example
-    /// 
     /// </summary>
     class Program
     {
-        static readonly IBankIdAuthenticator _bankIdAuthenticator =
+        static readonly IBankIdAuthenticator _bankIdAuthenticatorV4 =
+            new BankIdAuthenticatorV4();
+        static readonly IBankIdAuthenticatorV5 _bankIdAuthenticatorV5 =
             new BankIdAuthenticatorV5();
 
         static void Main(string[] args)
         {
+            // choose what version to try here (v4 or v5)
+            IBankIdAuthenticator bankIdAuthenticator = _bankIdAuthenticatorV5;
+
             System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
             try
@@ -29,10 +32,10 @@ namespace MobileBankIDExample
                 string ssn = "194211113636"; //GetSsn();
 
                 // authenticate request and return order
-                var order = _bankIdAuthenticator.Authenticate(ssn);
+                var order = bankIdAuthenticator.Authenticate(ssn);
 
                 // collect the result
-                _bankIdAuthenticator.Collect(order);
+                bankIdAuthenticator.Collect(order);
             }
             catch (Exception ex)
             {

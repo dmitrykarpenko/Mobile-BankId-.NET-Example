@@ -12,7 +12,9 @@ using MobileBankIDExample.Converters;
 namespace MobileBankIDExample.BankIdAuthenticator
 {
     /// <summary>
-    /// This implementation uses BankIDService which was created using the following WSDL:
+    /// This implementation uses BankIDService
+    /// (unfold Service References in this Solution Explorer)
+    /// which was created using the following WSDL:
     /// https://appapi2.test.bankid.com/rp/v4?wsdl
     /// </summary>
     public class BankIdAuthenticatorV4 : IBankIdAuthenticator
@@ -66,13 +68,15 @@ namespace MobileBankIDExample.BankIdAuthenticator
                     Console.WriteLine(result.progressStatus);
                     System.Threading.Thread.Sleep(1000);
 
-                } while (result.progressStatus != ProgressStatusType.COMPLETE);
+                }
+                while (result.progressStatus != ProgressStatusType.COMPLETE);
 
 
                 do
                 {
                     Console.WriteLine("Hi {0}, please press [ESC] to exit", result.userInfo.givenName);
-                } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
+                }
+                while (Console.ReadKey(true).Key != ConsoleKey.Escape);
             }
         }
     }

@@ -51,6 +51,7 @@
     <Compile Include="BankIdAuthenticator\BankIdAuthenticatorV4.cs" />
     <Compile Include="BankIdAuthenticator\BankIdAuthenticatorV5.cs" />
     <Compile Include="BankIdAuthenticator\IBankIdAuthenticator.cs" />
+    <Compile Include="BankIdAuthenticator\IBankIdAuthenticatorV5.cs" />
     <Compile Include="Converters\Converter.cs" />
     <Compile Include="Models\Json\CancelRequestModel.cs" />
     <Compile Include="Models\Json\CollectResponseModel.cs" />

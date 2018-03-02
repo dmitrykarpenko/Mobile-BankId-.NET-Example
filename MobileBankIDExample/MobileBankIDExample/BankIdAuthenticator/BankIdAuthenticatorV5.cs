@@ -13,44 +13,37 @@ using Newtonsoft.Json;
 using MobileBankIDExample.Models.Json;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 
 namespace MobileBankIDExample.BankIdAuthenticator
 {
-    public class BankIdAuthenticatorV5 : IBankIdAuthenticator
+    /// <summary>
+    /// This version uses REST API (HTTP requests with JSON content)
+    /// </summary>
+    public class BankIdAuthenticatorV5 : IBankIdAuthenticatorV5
     {
         private const string _baseUrl = "https://appapi2.test.bankid.com/rp/v5/";
         private const string _serverCertificateName = "FP Testcert 2";
 
         public OrderResponseTypeModel Authenticate(string ssn)
         {
-            return AuthenticateAsync(ssn).Result;
+            // The user IP address as seen by RP. IPv4 and IPv6.
+            var endUserIp = GetLocalIPAddress() ?? "192.168.1.106";
+            return AuthenticateAsync(ssn, endUserIp).Result;
         }
 
-        public async Task<OrderResponseTypeModel> AuthenticateAsync(string personalNumber)
+        public async Task<OrderResponseTypeModel> AuthenticateAsync(string personalNumber, string endUserIp)
         {
             var requestModel = new AuthRequestModel()
             {
                 PersonalNumber = personalNumber,
-                // TODO: make a parameter
-                EndUserIp = "192.168.1.106",
+                EndUserIp = endUserIp,
             };
 
             var responseModel = await PostAsync<AuthRequestModel, AuthResponseModel>(
                 _baseUrl + "auth", requestModel);
 
             return Converter.Map(responseModel);
-        }
-
-        private StringContent ObjectToJsonContent(object obj, out string objStr)
-        {
-            objStr = JsonConvert.SerializeObject(obj,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-            var content = new StringContent(objStr);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            return content;
         }
 
         public void Collect(OrderResponseTypeModel order)
@@ -60,6 +53,12 @@ namespace MobileBankIDExample.BankIdAuthenticator
 
         public async Task CollectAsync(OrderResponseTypeModel order)
         {
+            if (string.IsNullOrEmpty(order.OrderRef))
+            {
+                Console.WriteLine("{0}OrderRef should not be empty", Environment.NewLine);
+                return;
+            }
+
             Console.WriteLine("{0}Start the BankID application and sign in", Environment.NewLine);
 
             CollectResponseModel responseModel;
@@ -77,7 +76,7 @@ namespace MobileBankIDExample.BankIdAuthenticator
                 Console.WriteLine(responseModel.Status);
                 System.Threading.Thread.Sleep(1000);
             }
-            while (responseModel.Status != "complete");
+            while (responseModel.CollectStatus != CollectStatus.Complete);
 
             do
             {
@@ -105,8 +104,30 @@ namespace MobileBankIDExample.BankIdAuthenticator
                 return responseModel;
             }
         }
+        
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    return ip.ToString();
+            return null;
+        }
 
-        private X509Certificate2 GetX509Certifacate(string name)
+        private static StringContent ObjectToJsonContent(object obj, out string objStr)
+        {
+            objStr = JsonConvert.SerializeObject(obj,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+            var content = new StringContent(objStr);
+            // BankID API v5 requires to ony have "application/json" (without e.g. "charset")
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return content;
+        }
+
+        private static X509Certificate2 GetX509Certifacate(string name)
         {
             //StoreLocation.LocalMachine
             X509Store store = new X509Store(StoreLocation.LocalMachine);
